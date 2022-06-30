@@ -2,12 +2,26 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthenticationService } from '@/data/services'
 import { LoadUserLoginApi } from '@/data/contracts/apis'
 
-import { mock } from 'jest-mock-extended'
+import { mock, MockProxy } from 'jest-mock-extended'
+
+type SutTypes = {
+  sut: LoginAuthenticationService
+  loadLoginUser: MockProxy<LoadUserLoginApi>
+}
+
+const makeSut = (): SutTypes => {
+  const loadLoginUser = mock<LoadUserLoginApi>()
+  const sut = new LoginAuthenticationService(loadLoginUser)
+
+  return {
+    sut,
+    loadLoginUser
+  }
+}
 
 describe('LoginAuthenticationService', () => {
   it('Should call LoadUserLoginApi with correct params', async () => {
-    const loadLoginUser = mock<LoadUserLoginApi>()
-    const sut = new LoginAuthenticationService(loadLoginUser)
+    const { sut, loadLoginUser } = makeSut()
 
     await sut.perform({ user: 'any_login', password: 'any_senha' })
 
@@ -16,9 +30,8 @@ describe('LoginAuthenticationService', () => {
   })
 
   it('Should return AuthenticationError when LoadUserLoginApi returns undefined', async () => {
-    const loadLoginUser = mock<LoadUserLoginApi>()
+    const { sut, loadLoginUser } = makeSut()
     loadLoginUser.loadUserLoginApi.mockResolvedValueOnce(undefined)
-    const sut = new LoginAuthenticationService(loadLoginUser)
 
     const authResult = await sut.perform({ user: 'any_login', password: 'any_senha' })
 
