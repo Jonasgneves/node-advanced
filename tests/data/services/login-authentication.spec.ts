@@ -1,5 +1,6 @@
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
+import { LoadUserLoginApi } from '@/data/contracts/apis'
 
 class LoginAuthenticationService {
   constructor (
@@ -12,20 +13,7 @@ class LoginAuthenticationService {
   }
 }
 
-interface LoadUserLoginApi {
-  loadUserLoginApi: (params: LoadUserLoginApi.Params) => Promise<LoadUserLoginApi.Result>
-}
-
-namespace LoadUserLoginApi {
-  export type Params = {
-    user: string
-    password: string
-  }
-
-  export type Result = undefined
-}
-
-class LoadUserLoginApiSpy implements LoadUserLoginApi {
+export class LoadUserLoginApiSpy implements LoadUserLoginApi {
   signin?: LoginAuthentication.Params
   result = undefined
 
