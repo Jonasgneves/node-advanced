@@ -1,11 +1,12 @@
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthenticationService } from '@/data/services'
+import { LoadUserLoginApi } from '@/data/contracts/apis'
+
+import { mock } from 'jest-mock-extended'
 
 describe('LoginAuthenticationService', () => {
   it('Should call LoadUserLoginApi with correct params', async () => {
-    const loadLoginUser = {
-      loadUserLoginApi: jest.fn()
-    }
+    const loadLoginUser = mock<LoadUserLoginApi>()
     const sut = new LoginAuthenticationService(loadLoginUser)
 
     await sut.perform({ user: 'any_login', password: 'any_senha' })
@@ -15,9 +16,7 @@ describe('LoginAuthenticationService', () => {
   })
 
   it('Should return AuthenticationError when LoadUserLoginApi returns undefined', async () => {
-    const loadLoginUser = {
-      loadUserLoginApi: jest.fn()
-    }
+    const loadLoginUser = mock<LoadUserLoginApi>()
     loadLoginUser.loadUserLoginApi.mockResolvedValueOnce(undefined)
     const sut = new LoginAuthenticationService(loadLoginUser)
 
