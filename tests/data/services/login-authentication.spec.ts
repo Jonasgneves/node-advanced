@@ -1,17 +1,7 @@
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { LoadUserLoginApi } from '@/data/contracts/apis'
-
-class LoginAuthenticationService {
-  constructor (
-    private readonly loadLoginUser: LoadUserLoginApi
-  ) {}
-
-  async perform (params: LoginAuthentication.Params): Promise<AuthenticationError> {
-    await this.loadLoginUser.loadUserLoginApi(params)
-    return new AuthenticationError()
-  }
-}
+import { LoginAuthenticationService } from '@/data/services'
 
 export class LoadUserLoginApiSpy implements LoadUserLoginApi {
   signin?: LoginAuthentication.Params
