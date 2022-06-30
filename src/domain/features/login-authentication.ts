@@ -5,10 +5,10 @@ export interface LoginAuthentication {
   perform: (params: LoginAuthentication.Params) => Promise<LoginAuthentication.Result>
 }
 
-namespace LoginAuthentication {
+export namespace LoginAuthentication {
   export type Params = {
-    login: string
-    senha: string
+    user: string
+    password: string
   }
 
   export type Result = AccessToken | AuthenticationError
