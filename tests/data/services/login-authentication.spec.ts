@@ -7,6 +7,8 @@ import { mock, MockProxy } from 'jest-mock-extended'
 describe('LoginAuthenticationService', () => {
   let loadLoginUser: MockProxy<LoadUserLoginApi>
   let sut: LoginAuthenticationService
+  const user = 'any_login'
+  const password = 'any_password'
 
   beforeEach(() => {
     loadLoginUser = mock()
@@ -14,16 +16,16 @@ describe('LoginAuthenticationService', () => {
   })
 
   it('Should call LoadUserLoginApi with correct params', async () => {
-    await sut.perform({ user: 'any_login', password: 'any_senha' })
+    await sut.perform({ user, password })
 
-    expect(loadLoginUser.loadUserLoginApi).toHaveBeenCalledWith({ user: 'any_login', password: 'any_senha' })
+    expect(loadLoginUser.loadUserLoginApi).toHaveBeenCalledWith({ user, password })
     expect(loadLoginUser.loadUserLoginApi).toHaveBeenCalledTimes(1)
   })
 
   it('Should return AuthenticationError when LoadUserLoginApi returns undefined', async () => {
     loadLoginUser.loadUserLoginApi.mockResolvedValueOnce(undefined)
 
-    const authResult = await sut.perform({ user: 'any_login', password: 'any_senha' })
+    const authResult = await sut.perform({ user, password })
 
     expect(authResult).toEqual(new AuthenticationError())
   })
