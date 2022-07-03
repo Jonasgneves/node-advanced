@@ -8,5 +8,7 @@ export namespace LoadUserLoginApi {
     password: string
   }
 
-  export type Result = undefined
+  export type Result = undefined | {
+    token: string
+  }
 }

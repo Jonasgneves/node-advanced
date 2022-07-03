@@ -1,4 +1,4 @@
-import { AuthenticationError } from '@/domain/errors'
+import { NotFound } from '@/domain/errors'
 import { AccessToken } from '@/domain/models'
 
 export interface LoginAuthentication {
@@ -11,5 +11,5 @@ export namespace LoginAuthentication {
     password: string
   }
 
-  export type Result = AccessToken | AuthenticationError
+  export type Result = AccessToken | NotFound
 }
