@@ -9,6 +9,6 @@ export namespace LoadUserRepository {
   }
 
   export type Result = {
-    id: 'any_user_id'
+    id: string
   } | undefined
 }

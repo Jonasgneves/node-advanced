@@ -4,6 +4,7 @@ import { TokenGenerator } from '@/data/contracts/crypto'
 import { NotFound } from '@/domain/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { AccessToken } from '@/domain/models'
 
 describe('LoginAuthenticationService', () => {
   let loadUserRepo: MockProxy<LoadUserRepository>
@@ -40,7 +41,10 @@ describe('LoginAuthenticationService', () => {
   it('Should call TokenGenerator whit correct params', async () => {
     await sut.perform({ user, password })
 
-    expect(crypto.generateToken).toHaveBeenCalledWith({ key: 'any_user_id' })
+    expect(crypto.generateToken).toHaveBeenCalledWith({
+      key: 'any_user_id',
+      expirationInMs: AccessToken.expirationInMs
+    })
     expect(crypto.generateToken).toHaveBeenCalledTimes(1)
   })
 
