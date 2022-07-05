@@ -19,6 +19,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.4.1",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/module-alias": "^2.0.1",
     "@types/node": "^17.0.23",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
@@ -38,6 +39,7 @@
     "node": "16.x"
   },
   "dependencies": {
+    "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "rimraf": "^3.0.2"
   }
