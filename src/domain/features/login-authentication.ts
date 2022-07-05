@@ -1,15 +1,15 @@
-import { NotFound } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/errors'
 import { AccessToken } from '@/domain/models'
 
 export interface LoginAuthentication {
-  perform: (params: LoginAuthentication.Params) => Promise<LoginAuthentication.Result>
+  auth: (params: LoginAuthentication.Params) => Promise<LoginAuthentication.Result>
 }
 
 export namespace LoginAuthentication {
   export type Params = {
-    user: string
-    password: string
+    user: string | undefined
+    password: string | undefined
   }
 
-  export type Result = AccessToken | NotFound
+  export type Result = AccessToken | AuthenticationError
 }

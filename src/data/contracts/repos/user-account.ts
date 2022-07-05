@@ -1,14 +1,14 @@
-export interface LoadUserRepository {
-  loadUser: (params: LoadUserRepository.Params) => Promise<LoadUserRepository.Result>
+export interface UserRepository {
+  loadUser: (params: UserRepository.Params) => Promise<UserRepository.Result>
 }
 
-export namespace LoadUserRepository {
+export namespace UserRepository {
   export type Params = {
-    user: string
-    password: string
+    user: string | undefined
+    password: string | undefined
   }
 
-  export type Result = {
-    id: string
-  } | undefined
+  export type Result = undefined | {
+    userId: string
+  }
 }

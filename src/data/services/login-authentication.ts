@@ -1,20 +1,29 @@
-import { NotFound } from '@/domain/errors'
+import { AuthenticationError, MissingParamError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
-import { LoadUserRepository } from '@/data/contracts/repos'
-import { TokenGenerator } from '@/data/contracts/crypto'
+import { UserRepository } from '@/data/contracts/repos'
+import { TokenGenerator } from '../contracts/crypto'
 import { AccessToken } from '@/domain/models'
+// import { TokenGenerator } from '@/data/contracts/crypto'
+// import { AccessToken } from '@/domain/models'
 
-export class LoginAuthenticationService {
+export class LoginAuthenticationService implements LoginAuthentication {
   constructor (
-    private readonly loadUserRepo: LoadUserRepository,
+    private readonly userRepository: UserRepository,
     private readonly crypto: TokenGenerator
-  ) {}
+  ) {
+  }
 
-  async perform (params: LoginAuthentication.Params): Promise<LoginAuthentication.Result> {
-    const requestIdUser = await this.loadUserRepo.loadUser(params)
-    if (requestIdUser !== undefined) {
-      await this.crypto.generateToken({ key: requestIdUser.id, expirationInMs: AccessToken.expirationInMs })
+  async auth (params: LoginAuthentication.Params): Promise<LoginAuthentication.Result> {
+    if (!params.user) return new MissingParamError('User')
+    if (!params.password) return new MissingParamError('Password')
+    const accountUserId = await this.userRepository.loadUser(params)
+    if (accountUserId !== undefined) {
+      const token = await this.crypto.generateToken({
+        key: accountUserId.userId,
+        expirationInMs: AccessToken.expirationInMs
+      })
+      return new AccessToken(token)
     }
-    return new NotFound()
+    return new AuthenticationError()
   }
 }
