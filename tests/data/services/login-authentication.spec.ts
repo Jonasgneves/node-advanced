@@ -10,14 +10,19 @@ describe('LoginAuthenticationService', () => {
   let loadUserRepo: MockProxy<UserRepository>
   let crypto: MockProxy<TokenGenerator>
   let sut: LoginAuthenticationService
-  const user = 'any_user'
-  const password = 'any_password'
+  let user: string
+  let password: string
 
-  beforeEach(() => {
+  beforeAll(() => {
+    user = 'any_user'
+    password = 'any_password'
     loadUserRepo = mock()
     crypto = mock()
     crypto.generateToken.mockResolvedValue('any_generated_token')
     loadUserRepo.loadUser.mockResolvedValue({ userId: 'any_user_id' })
+  })
+
+  beforeEach(() => {
     sut = new LoginAuthenticationService(
       loadUserRepo,
       crypto
