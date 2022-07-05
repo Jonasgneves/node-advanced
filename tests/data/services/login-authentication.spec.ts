@@ -68,4 +68,20 @@ describe('LoginAuthenticationService', () => {
 
     expect(authResult).toEqual(new AccessToken('any_generated_token'))
   })
+
+  it('Should rethrow if UserRepository throws', async () => {
+    loadUserRepo.loadUser.mockRejectedValueOnce(new Error('user_repo'))
+
+    const promise = sut.auth({ user, password })
+
+    await expect(promise).rejects.toThrow(new Error('user_repo'))
+  })
+
+  it('Should rethrow if TokenGenerator throws', async () => {
+    crypto.generateToken.mockRejectedValueOnce(new Error('token_error'))
+
+    const promise = sut.auth({ user, password })
+
+    await expect(promise).rejects.toThrow(new Error('token_error'))
+  })
 })
