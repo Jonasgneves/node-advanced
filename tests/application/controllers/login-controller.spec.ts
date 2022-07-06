@@ -2,54 +2,10 @@
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
+import { LoginController } from '@/application/controllers'
+import { ServerError } from '@/application/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-
-class LoginController {
-  constructor (private readonly loginAuth: LoginAuthentication) {}
-  async handle (httpRequest: any): Promise<HttpResponse> {
-    try {
-      if (httpRequest.token === '' || httpRequest.token === null || httpRequest.token === undefined) {
-        return {
-          statusCode: 400,
-          data: new Error('The field token is Required')
-        }
-      }
-      const result = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
-      if (result instanceof AccessToken) {
-        return {
-          statusCode: 200,
-          data: {
-            accessToken: result.value
-          }
-        }
-      } else {
-        return {
-          statusCode: 401,
-          data: result
-        }
-      }
-    } catch (error: any) {
-      return {
-        statusCode: 500,
-        data: new ServerError(error)
-      }
-    }
-  }
-}
-
-type HttpResponse = {
-  statusCode: number
-  data: any
-}
-
-class ServerError extends Error {
-  constructor (error?: Error) {
-    super('Server failed. try again soon')
-    this.name = 'ServerError'
-    this.stack = error?.stack
-  }
-}
 
 describe('LoginController', () => {
   let sut: LoginController
