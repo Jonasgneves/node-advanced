@@ -1,7 +1,7 @@
 import { UserRepository } from '@/data/contracts/repos'
 
-import { Entity, PrimaryGeneratedColumn, Column, getRepository } from 'typeorm'
-import { newDb } from 'pg-mem'
+import { Entity, PrimaryGeneratedColumn, Column, getRepository, Repository, getConnection } from 'typeorm'
+import { IBackup, newDb } from 'pg-mem'
 
 class PgUserAccountRepository implements UserRepository {
   async loadUser (params: UserRepository.Params): Promise<UserRepository.Result> {
@@ -32,36 +32,42 @@ class User {
 
 describe('PgUserAccountRepository', () => {
   describe('loadUser', () => {
-    it('should return an account if user exists', async () => {
+    let sut: PgUserAccountRepository
+    let pgUserRepo: Repository<User>
+    let backup: IBackup
+
+    beforeAll(async () => {
       const db = newDb()
       const connection = await db.adapters.createTypeormConnection({
         type: 'postgres',
         entities: [User]
       })
       await connection.synchronize()
-      const pgUserRepo = getRepository(User)
-      await pgUserRepo.save({ name: 'existing_user', email: 'jonas@mail.com', password: 'existing_password' })
-      const sut = new PgUserAccountRepository()
+      backup = db.backup()
+      pgUserRepo = getRepository(User)
+    })
 
-      const account = await sut.loadUser({ user: 'existing_user', password: 'existing_password' })
+    afterAll(async () => {
+      await getConnection().close()
+    })
+
+    beforeEach(() => {
+      backup.restore()
+      sut = new PgUserAccountRepository()
+    })
+
+    it('should return an account if user exists', async () => {
+      await pgUserRepo.save({ name: 'any_user', email: 'jonas@mail.com', password: 'any_password' })
+
+      const account = await sut.loadUser({ user: 'any_user', password: 'any_password' })
 
       expect(account).toEqual({ userId: '1' })
-      await connection.close()
     })
 
     it('should return undefined if user does not exists', async () => {
-      const db = newDb()
-      const connection = await db.adapters.createTypeormConnection({
-        type: 'postgres',
-        entities: [User]
-      })
-      await connection.synchronize()
-      const sut = new PgUserAccountRepository()
+      const account = await sut.loadUser({ user: 'any_user', password: 'any_password' })
 
-      const account = await sut.loadUser({ user: 'new_user', password: 'new_password' })
-
-      expect(account).toBe(undefined)
-      await connection.close()
+      expect(account).toBeUndefined()
     })
   })
 })
