@@ -1,33 +1,17 @@
-import { UserRepository } from '@/data/contracts/repos'
+import { PgUserAccountRepository } from '@/infra/postgres/repos'
+import { User } from '@/infra/postgres/entities'
 
-import { Entity, PrimaryGeneratedColumn, Column, getRepository, Repository, getConnection } from 'typeorm'
-import { IBackup, newDb } from 'pg-mem'
+import { getRepository, Repository, getConnection } from 'typeorm'
+import { IBackup, IMemoryDb, newDb } from 'pg-mem'
 
-class PgUserAccountRepository implements UserRepository {
-  async loadUser (params: UserRepository.Params): Promise<UserRepository.Result> {
-    const pgUserRepo = getRepository(User)
-    const pgUser = await pgUserRepo.findOne({ name: params.user })
-    if (pgUser !== undefined) {
-      return {
-        userId: pgUser.id.toString()
-      }
-    }
-  }
-}
-
-@Entity({ name: 'usuarios' })
-class User {
-  @PrimaryGeneratedColumn()
-  id!: number
-
-  @Column({ name: 'nome', nullable: true })
-  name?: string
-
-  @Column()
-  email!: string
-
-  @Column({ name: 'senha' })
-  password!: string
+const makeFakeDb = async (entities?: any[]): Promise<IMemoryDb> => {
+  const db = newDb()
+  const connection = await db.adapters.createTypeormConnection({
+    type: 'postgres',
+    entities: entities ?? ['src/infra/postgres/entities/index.ts']
+  })
+  await connection.synchronize()
+  return db
 }
 
 describe('PgUserAccountRepository', () => {
@@ -37,12 +21,7 @@ describe('PgUserAccountRepository', () => {
     let backup: IBackup
 
     beforeAll(async () => {
-      const db = newDb()
-      const connection = await db.adapters.createTypeormConnection({
-        type: 'postgres',
-        entities: [User]
-      })
-      await connection.synchronize()
+      const db = await makeFakeDb([User])
       backup = db.backup()
       pgUserRepo = getRepository(User)
     })
