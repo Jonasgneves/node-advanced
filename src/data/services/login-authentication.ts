@@ -3,8 +3,6 @@ import { LoginAuthentication } from '@/domain/features'
 import { UserRepository } from '@/data/contracts/repos'
 import { TokenGenerator } from '../contracts/crypto'
 import { AccessToken } from '@/domain/models'
-// import { TokenGenerator } from '@/data/contracts/crypto'
-// import { AccessToken } from '@/domain/models'
 
 export class LoginAuthenticationService implements LoginAuthentication {
   constructor (
