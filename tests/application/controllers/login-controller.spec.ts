@@ -1,3 +1,5 @@
+// import { AuthenticationError } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -5,10 +7,16 @@ import { mock, MockProxy } from 'jest-mock-extended'
 class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
   async handle (httpRequest: any): Promise<HttpResponse> {
-    await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
+    if (httpRequest.token === '' || httpRequest.token === null || httpRequest.token === undefined) {
+      return {
+        statusCode: 400,
+        data: new Error('The field token is Required')
+      }
+    }
+    const result = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
     return {
-      statusCode: 400,
-      data: new Error('The field token is Required')
+      statusCode: 401,
+      data: result
     }
   }
 }
@@ -21,6 +29,7 @@ type HttpResponse = {
 describe('LoginController', () => {
   let sut: LoginController
   let loginAuth: MockProxy<LoginAuthentication>
+
   beforeAll(() => {
     loginAuth = mock()
   })
@@ -57,9 +66,19 @@ describe('LoginController', () => {
   })
 
   it('should call LoginAuthentication with correct params', async () => {
-    await sut.handle({ user: 'any_user', password: 'any_password' })
+    await sut.handle({ user: 'any_user', password: 'any_password', token: 'any_token' })
 
     expect(loginAuth.auth).toHaveBeenCalledWith({ user: 'any_user', password: 'any_password' })
     expect(loginAuth.auth).toHaveBeenCalledTimes(1)
+  })
+
+  it('should return 401 if authentication fails', async () => {
+    loginAuth.auth.mockResolvedValueOnce(new AuthenticationError())
+    const httpResponse = await sut.handle({ token: 'any_token' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 401,
+      data: new AuthenticationError()
+    })
   })
 })
