@@ -1,6 +1,6 @@
 import { LoginAuthentication } from '@/domain/features'
 
-import { mock } from 'jest-mock-extended'
+import { mock, MockProxy } from 'jest-mock-extended'
 
 class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
@@ -19,10 +19,17 @@ type HttpResponse = {
 }
 
 describe('LoginController', () => {
-  it('should return 400 if token is empty', async () => {
-    const loginAuth = mock<LoginAuthentication>()
-    const sut = new LoginController(loginAuth)
+  let sut: LoginController
+  let loginAuth: MockProxy<LoginAuthentication>
+  beforeAll(() => {
+    loginAuth = mock()
+  })
 
+  beforeEach(() => {
+    sut = new LoginController(loginAuth)
+  })
+
+  it('should return 400 if token is empty', async () => {
     const httpResponse = await sut.handle({ token: '' })
 
     expect(httpResponse).toEqual({
@@ -32,9 +39,6 @@ describe('LoginController', () => {
   })
 
   it('should return 400 if token is null', async () => {
-    const loginAuth = mock<LoginAuthentication>()
-    const sut = new LoginController(loginAuth)
-
     const httpResponse = await sut.handle({ token: null })
 
     expect(httpResponse).toEqual({
@@ -44,9 +48,6 @@ describe('LoginController', () => {
   })
 
   it('should return 400 if token is undefined', async () => {
-    const loginAuth = mock<LoginAuthentication>()
-    const sut = new LoginController(loginAuth)
-
     const httpResponse = await sut.handle({ token: undefined })
 
     expect(httpResponse).toEqual({
@@ -56,9 +57,6 @@ describe('LoginController', () => {
   })
 
   it('should call LoginAuthentication with correct params', async () => {
-    const loginAuth = mock<LoginAuthentication>()
-    const sut = new LoginController(loginAuth)
-
     await sut.handle({ user: 'any_user', password: 'any_password' })
 
     expect(loginAuth.auth).toHaveBeenCalledWith({ user: 'any_user', password: 'any_password' })
