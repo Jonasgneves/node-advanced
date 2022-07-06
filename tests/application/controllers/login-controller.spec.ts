@@ -1,6 +1,7 @@
 // import { AuthenticationError } from '@/domain/errors'
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
+import { AccessToken } from '@/domain/models'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -14,9 +15,18 @@ class LoginController {
       }
     }
     const result = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
-    return {
-      statusCode: 401,
-      data: result
+    if (result instanceof AccessToken) {
+      return {
+        statusCode: 200,
+        data: {
+          accessToken: result.value
+        }
+      }
+    } else {
+      return {
+        statusCode: 401,
+        data: result
+      }
     }
   }
 }
@@ -32,6 +42,7 @@ describe('LoginController', () => {
 
   beforeAll(() => {
     loginAuth = mock()
+    loginAuth.auth.mockResolvedValue(new AccessToken('any_value'))
   })
 
   beforeEach(() => {
@@ -79,6 +90,17 @@ describe('LoginController', () => {
     expect(httpResponse).toEqual({
       statusCode: 401,
       data: new AuthenticationError()
+    })
+  })
+
+  it('should return 200 if authentication success', async () => {
+    const httpResponse = await sut.handle({ token: 'any_token' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: {
+        accessToken: 'any_value'
+      }
     })
   })
 })
