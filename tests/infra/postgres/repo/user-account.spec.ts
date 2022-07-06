@@ -6,26 +6,25 @@ import { getRepository, Repository, getConnection } from 'typeorm'
 import { IBackup } from 'pg-mem'
 
 describe('PgUserAccountRepository', () => {
+  let sut: PgUserAccountRepository
+  let pgUserRepo: Repository<User>
+  let backup: IBackup
+
+  beforeAll(async () => {
+    const db = await makeFakeDb([User])
+    backup = db.backup()
+    pgUserRepo = getRepository(User)
+  })
+
+  afterAll(async () => {
+    await getConnection().close()
+  })
+
+  beforeEach(() => {
+    backup.restore()
+    sut = new PgUserAccountRepository()
+  })
   describe('loadUser', () => {
-    let sut: PgUserAccountRepository
-    let pgUserRepo: Repository<User>
-    let backup: IBackup
-
-    beforeAll(async () => {
-      const db = await makeFakeDb([User])
-      backup = db.backup()
-      pgUserRepo = getRepository(User)
-    })
-
-    afterAll(async () => {
-      await getConnection().close()
-    })
-
-    beforeEach(() => {
-      backup.restore()
-      sut = new PgUserAccountRepository()
-    })
-
     it('should return an account if user exists', async () => {
       await pgUserRepo.save({ name: 'any_user', email: 'jonas@mail.com', password: 'any_password' })
 
