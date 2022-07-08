@@ -1,7 +1,7 @@
 import { LoginAuthentication } from '@/domain/features'
-import { badRequest, HttpResponse, unauthorized } from '@/application/helpers'
+import { badRequest, HttpResponse, serverError, unauthorized } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
-import { RequiredFieldError, ServerError } from '@/application/errors'
+import { RequiredFieldError } from '@/application/errors'
 
 export class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
@@ -25,10 +25,7 @@ export class LoginController {
         return unauthorized()
       }
     } catch (error: any) {
-      return {
-        statusCode: 500,
-        data: new ServerError(error)
-      }
+      return serverError(error)
     }
   }
 }
