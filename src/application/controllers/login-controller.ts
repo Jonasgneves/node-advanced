@@ -1,5 +1,5 @@
 import { LoginAuthentication } from '@/domain/features'
-import { badRequest, HttpResponse } from '@/application/helpers'
+import { badRequest, HttpResponse, unauthorized } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
 import { RequiredFieldError, ServerError } from '@/application/errors'
 
@@ -13,19 +13,16 @@ export class LoginController {
       if (httpRequest.password === undefined || httpRequest.password === '' || httpRequest.password === null) {
         return badRequest(new RequiredFieldError('Password'))
       }
-      const result = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
-      if (result instanceof AccessToken) {
+      const accessToken = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
+      if (accessToken instanceof AccessToken) {
         return {
           statusCode: 200,
           data: {
-            accessToken: result.value
+            accessToken: accessToken.value
           }
         }
       } else {
-        return {
-          statusCode: 401,
-          data: result
-        }
+        return unauthorized()
       }
     } catch (error: any) {
       return {

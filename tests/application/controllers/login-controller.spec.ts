@@ -3,7 +3,7 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
 import { LoginController } from '@/application/controllers'
-import { RequiredFieldError, ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
@@ -97,7 +97,7 @@ describe('LoginController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 401,
-      data: new AuthenticationError()
+      data: new UnauthorizedError()
     })
   })
 
