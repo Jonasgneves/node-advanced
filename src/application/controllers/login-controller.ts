@@ -4,7 +4,7 @@ import { AccessToken } from '@/domain/models'
 import { RequiredFieldError } from '@/application/errors'
 
 type HttpRequest = {
-  user: string | undefined | null
+  user: string
   password: string | undefined | null
 }
 
@@ -15,8 +15,9 @@ export class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
   async handle (httpRequest: HttpRequest): Promise<HttpResponse<Model>> {
     try {
-      if (httpRequest.user === undefined || httpRequest.user === '' || httpRequest.user === null) {
-        return badRequest(new RequiredFieldError('User'))
+      const error = this.validate(httpRequest)
+      if (error !== undefined) {
+        return badRequest(error)
       }
       if (httpRequest.password === undefined || httpRequest.password === '' || httpRequest.password === null) {
         return badRequest(new RequiredFieldError('Password'))
@@ -29,6 +30,12 @@ export class LoginController {
       }
     } catch (error: any) {
       return serverError(error)
+    }
+  }
+
+  private validate (httpRequest: HttpRequest): Error | undefined {
+    if (httpRequest.user === undefined || httpRequest.user === '' || httpRequest.user === null) {
+      return new RequiredFieldError('User')
     }
   }
 }

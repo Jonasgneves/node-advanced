@@ -25,7 +25,7 @@ describe('LoginController', () => {
   })
 
   it('should return 400 if user is undefined', async () => {
-    const userData = { user: undefined, password }
+    const userData = { user: undefined as any, password }
     const result = await sut.handle(userData)
 
     expect(result).toEqual({
@@ -65,7 +65,7 @@ describe('LoginController', () => {
   })
 
   it('should return 400 if user is null', async () => {
-    const userData = { user: null, password }
+    const userData = { user: null as any, password }
     const result = await sut.handle(userData)
 
     expect(result).toEqual({
