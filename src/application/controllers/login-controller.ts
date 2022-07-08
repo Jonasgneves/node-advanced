@@ -3,9 +3,17 @@ import { badRequest, HttpResponse, serverError, unauthorized, ok } from '@/appli
 import { AccessToken } from '@/domain/models'
 import { RequiredFieldError } from '@/application/errors'
 
+type HttpRequest = {
+  user: string | undefined | null
+  password: string | undefined | null
+}
+
+type Model = Error | {
+  accessToken: string
+}
 export class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
-  async handle (httpRequest: any): Promise<HttpResponse> {
+  async handle (httpRequest: HttpRequest): Promise<HttpResponse<Model>> {
     try {
       if (httpRequest.user === undefined || httpRequest.user === '' || httpRequest.user === null) {
         return badRequest(new RequiredFieldError('User'))
