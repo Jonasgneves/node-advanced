@@ -1,17 +1,17 @@
 import { LoginAuthentication } from '@/domain/features'
-import { HttpResponse } from '@/application/helpers'
+import { badRequest, HttpResponse } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
-import { ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError } from '@/application/errors'
 
 export class LoginController {
   constructor (private readonly loginAuth: LoginAuthentication) {}
   async handle (httpRequest: any): Promise<HttpResponse> {
     try {
-      if (httpRequest.token === '' || httpRequest.token === null || httpRequest.token === undefined) {
-        return {
-          statusCode: 400,
-          data: new Error('The field token is Required')
-        }
+      if (httpRequest.user === undefined || httpRequest.user === '' || httpRequest.user === null) {
+        return badRequest(new RequiredFieldError('User'))
+      }
+      if (httpRequest.password === undefined || httpRequest.password === '' || httpRequest.password === null) {
+        return badRequest(new RequiredFieldError('Password'))
       }
       const result = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
       if (result instanceof AccessToken) {

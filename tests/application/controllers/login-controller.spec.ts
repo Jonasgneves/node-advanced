@@ -3,15 +3,19 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
 import { LoginController } from '@/application/controllers'
-import { ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError } from '@/application/errors'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('LoginController', () => {
   let sut: LoginController
   let loginAuth: MockProxy<LoginAuthentication>
+  let user: string
+  let password: string
 
   beforeAll(() => {
+    user = 'any_user'
+    password = 'any_password'
     loginAuth = mock()
     loginAuth.auth.mockResolvedValue(new AccessToken('any_value'))
   })
@@ -20,43 +24,76 @@ describe('LoginController', () => {
     sut = new LoginController(loginAuth)
   })
 
-  it('should return 400 if token is empty', async () => {
-    const httpResponse = await sut.handle({ token: '' })
+  it('should return 400 if user is undefined', async () => {
+    const userData = { user: undefined, password }
+    const result = await sut.handle(userData)
 
-    expect(httpResponse).toEqual({
+    expect(result).toEqual({
       statusCode: 400,
-      data: new Error('The field token is Required')
+      data: new RequiredFieldError('User')
     })
   })
 
-  it('should return 400 if token is null', async () => {
-    const httpResponse = await sut.handle({ token: null })
+  it('should return 400 if password is undefined', async () => {
+    const userData = { user, password: undefined }
+    const result = await sut.handle(userData)
 
-    expect(httpResponse).toEqual({
+    expect(result).toEqual({
       statusCode: 400,
-      data: new Error('The field token is Required')
+      data: new RequiredFieldError('Password')
     })
   })
 
-  it('should return 400 if token is undefined', async () => {
-    const httpResponse = await sut.handle({ token: undefined })
+  it('should return 400 if user is empty', async () => {
+    const userData = { user: '', password }
+    const result = await sut.handle(userData)
 
-    expect(httpResponse).toEqual({
+    expect(result).toEqual({
       statusCode: 400,
-      data: new Error('The field token is Required')
+      data: new RequiredFieldError('User')
+    })
+  })
+
+  it('should return 400 if password is empty', async () => {
+    const userData = { user, password: '' }
+    const result = await sut.handle(userData)
+
+    expect(result).toEqual({
+      statusCode: 400,
+      data: new RequiredFieldError('Password')
+    })
+  })
+
+  it('should return 400 if user is null', async () => {
+    const userData = { user: null, password }
+    const result = await sut.handle(userData)
+
+    expect(result).toEqual({
+      statusCode: 400,
+      data: new RequiredFieldError('User')
+    })
+  })
+
+  it('should return 400 if password is null', async () => {
+    const userData = { user, password: null }
+    const result = await sut.handle(userData)
+
+    expect(result).toEqual({
+      statusCode: 400,
+      data: new RequiredFieldError('Password')
     })
   })
 
   it('should call LoginAuthentication with correct params', async () => {
-    await sut.handle({ user: 'any_user', password: 'any_password', token: 'any_token' })
+    await sut.handle({ user, password })
 
-    expect(loginAuth.auth).toHaveBeenCalledWith({ user: 'any_user', password: 'any_password' })
+    expect(loginAuth.auth).toHaveBeenCalledWith({ user, password })
     expect(loginAuth.auth).toHaveBeenCalledTimes(1)
   })
 
   it('should return 401 if authentication fails', async () => {
     loginAuth.auth.mockResolvedValueOnce(new AuthenticationError())
-    const httpResponse = await sut.handle({ token: 'any_token' })
+    const httpResponse = await sut.handle({ user, password })
 
     expect(httpResponse).toEqual({
       statusCode: 401,
@@ -65,7 +102,7 @@ describe('LoginController', () => {
   })
 
   it('should return 200 if authentication success', async () => {
-    const httpResponse = await sut.handle({ token: 'any_token' })
+    const httpResponse = await sut.handle({ user, password })
 
     expect(httpResponse).toEqual({
       statusCode: 200,
@@ -78,7 +115,7 @@ describe('LoginController', () => {
   it('should return 500 if authentication throws', async () => {
     const error = new Error('infra_error')
     loginAuth.auth.mockRejectedValueOnce(error)
-    const httpResponse = await sut.handle({ token: 'any_token' })
+    const httpResponse = await sut.handle({ user, password })
 
     expect(httpResponse).toEqual({
       statusCode: 500,

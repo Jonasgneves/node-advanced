@@ -1,7 +1,7 @@
 import { LoginAuthenticationService } from '@/data/services'
 import { UserRepository } from '@/data/contracts/repos'
 import { TokenGenerator } from '@/data/contracts/crypto'
-import { AuthenticationError, MissingParamError } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/errors'
 import { AccessToken } from '@/domain/models'
 
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -34,20 +34,6 @@ describe('LoginAuthenticationService', () => {
 
     expect(loadUserRepo.loadUser).toHaveBeenCalledWith({ user, password })
     expect(loadUserRepo.loadUser).toHaveBeenCalledTimes(1)
-  })
-
-  it('Should throw a MissingParamError when UserAccountRepo no receive a user', async () => {
-    const userData = { user: undefined, password }
-    const result = await sut.auth(userData)
-
-    expect(result).toEqual(new MissingParamError('User'))
-  })
-
-  it('Should throw a MissingParamError when UserAccountRepo no receive a password', async () => {
-    const userData = { user, password: undefined }
-    const result = await sut.auth(userData)
-
-    expect(result).toEqual(new MissingParamError('Password'))
   })
 
   it('Should throw a AuthenticationError when UserRepository return undefined', async () => {
