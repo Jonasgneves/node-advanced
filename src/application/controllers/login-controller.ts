@@ -2,11 +2,11 @@ import { LoginAuthentication } from '@/domain/features'
 import { badRequest, HttpResponse, serverError, unauthorized, ok } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
 import { RequiredFieldError } from '@/application/errors'
-import { RequiredStringValidator } from '../validation'
+import { RequiredStringValidator, ValidationComposite } from '../validation'
 
 type HttpRequest = {
   user: string
-  password: string | undefined | null
+  password: string
 }
 
 type Model = Error | {
@@ -35,7 +35,9 @@ export class LoginController {
   }
 
   private validate (httpRequest: HttpRequest): Error | undefined {
-    const validator = new RequiredStringValidator(httpRequest.user, 'user')
-    return validator.validate()
+    return new ValidationComposite([
+      new RequiredStringValidator(httpRequest.user, 'user'),
+      new RequiredStringValidator(httpRequest.password, 'password')
+    ]).validate()
   }
 }

@@ -3,13 +3,13 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
 import { LoginController } from '@/application/controllers'
-import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
-import { RequiredStringValidator } from '@/application/validation'
+import { ServerError, UnauthorizedError } from '@/application/errors'
+import { RequiredStringValidator, ValidationComposite } from '@/application/validation'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 import { mocked } from 'ts-jest/utils'
 
-jest.mock('@/application/validation/required-string')
+jest.mock('@/application/validation/composite')
 
 describe('LoginController', () => {
   let sut: LoginController
@@ -28,36 +28,19 @@ describe('LoginController', () => {
     sut = new LoginController(loginAuth)
   })
 
-  it('should return 400 if password is undefined', async () => {
-    const userData = { user, password: undefined }
-    const result = await sut.handle(userData)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('Password')
-    })
-  })
-
-  it('should return 400 if password is empty', async () => {
-    const userData = { user, password: '' }
-    const result = await sut.handle(userData)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('Password')
-    })
-  })
-
   it('should return 400 if validation fails', async () => {
     const error = new Error('validation_error')
-    const RequiredStringValidatorSpy = jest.fn().mockImplementationOnce(() => ({
+    const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
       validate: jest.fn().mockReturnValueOnce(error)
     }))
-    mocked(RequiredStringValidator).mockImplementationOnce(RequiredStringValidatorSpy)
+    mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
 
     const result = await sut.handle({ user, password })
 
-    expect(RequiredStringValidator).toHaveBeenCalledWith('any_user', 'user')
+    expect(ValidationCompositeSpy).toHaveBeenCalledWith([
+      new RequiredStringValidator('any_user', 'user'),
+      new RequiredStringValidator('any_password', 'password')
+    ])
     expect(result).toEqual({
       statusCode: 400,
       data: error
