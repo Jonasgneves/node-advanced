@@ -35,7 +35,7 @@ export class LoginController {
   }
 
   private validate (httpRequest: HttpRequest): Error | undefined {
-    const validator = new RequiredStringValidator(httpRequest.user, 'User')
+    const validator = new RequiredStringValidator(httpRequest.user, 'user')
     return validator.validate()
   }
 }

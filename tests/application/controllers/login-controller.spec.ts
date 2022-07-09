@@ -4,8 +4,12 @@ import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
 import { LoginController } from '@/application/controllers'
 import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
+import { RequiredStringValidator } from '@/application/validation'
 
 import { mock, MockProxy } from 'jest-mock-extended'
+import { mocked } from 'ts-jest/utils'
+
+jest.mock('@/application/validation/required-string')
 
 describe('LoginController', () => {
   let sut: LoginController
@@ -24,16 +28,6 @@ describe('LoginController', () => {
     sut = new LoginController(loginAuth)
   })
 
-  it('should return 400 if user is undefined', async () => {
-    const userData = { user: undefined as any, password }
-    const result = await sut.handle(userData)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('User')
-    })
-  })
-
   it('should return 400 if password is undefined', async () => {
     const userData = { user, password: undefined }
     const result = await sut.handle(userData)
@@ -41,16 +35,6 @@ describe('LoginController', () => {
     expect(result).toEqual({
       statusCode: 400,
       data: new RequiredFieldError('Password')
-    })
-  })
-
-  it('should return 400 if user is empty', async () => {
-    const userData = { user: '', password }
-    const result = await sut.handle(userData)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('User')
     })
   })
 
@@ -64,23 +48,19 @@ describe('LoginController', () => {
     })
   })
 
-  it('should return 400 if user is null', async () => {
-    const userData = { user: null as any, password }
-    const result = await sut.handle(userData)
+  it('should return 400 if validation fails', async () => {
+    const error = new Error('validation_error')
+    const RequiredStringValidatorSpy = jest.fn().mockImplementationOnce(() => ({
+      validate: jest.fn().mockReturnValueOnce(error)
+    }))
+    mocked(RequiredStringValidator).mockImplementationOnce(RequiredStringValidatorSpy)
 
+    const result = await sut.handle({ user, password })
+
+    expect(RequiredStringValidator).toHaveBeenCalledWith('any_user', 'user')
     expect(result).toEqual({
       statusCode: 400,
-      data: new RequiredFieldError('User')
-    })
-  })
-
-  it('should return 400 if password is null', async () => {
-    const userData = { user, password: null }
-    const result = await sut.handle(userData)
-
-    expect(result).toEqual({
-      statusCode: 400,
-      data: new RequiredFieldError('Password')
+      data: error
     })
   })
 
