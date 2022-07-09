@@ -2,6 +2,7 @@ import { LoginAuthentication } from '@/domain/features'
 import { badRequest, HttpResponse, serverError, unauthorized, ok } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
 import { RequiredFieldError } from '@/application/errors'
+import { RequiredStringValidator } from '../validation'
 
 type HttpRequest = {
   user: string
@@ -34,8 +35,7 @@ export class LoginController {
   }
 
   private validate (httpRequest: HttpRequest): Error | undefined {
-    if (httpRequest.user === undefined || httpRequest.user === '' || httpRequest.user === null) {
-      return new RequiredFieldError('User')
-    }
+    const validator = new RequiredStringValidator(httpRequest.user, 'User')
+    return validator.validate()
   }
 }
