@@ -2,13 +2,10 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
 import { LoginController } from '@/application/controllers'
-import { ServerError, UnauthorizedError } from '@/application/errors'
-import { RequiredStringValidator, ValidationComposite } from '@/application/validation'
+import { UnauthorizedError } from '@/application/errors'
+import { RequiredStringValidator } from '@/application/validation'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { mocked } from 'jest-mock'
-
-jest.mock('@/application/validation/composite')
 
 describe('LoginController', () => {
   let sut: LoginController
@@ -27,23 +24,13 @@ describe('LoginController', () => {
     sut = new LoginController(loginAuth)
   })
 
-  it('should return 400 if validation fails', async () => {
-    const error = new Error('validation_error')
-    const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error)
-    }))
-    mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
+  it('should build Validators correctly', async () => {
+    const validators = sut.buildValidators({ user, password })
 
-    const result = await sut.handle({ user, password })
-
-    expect(ValidationCompositeSpy).toHaveBeenCalledWith([
+    expect(validators).toEqual([
       new RequiredStringValidator('any_user', 'user'),
       new RequiredStringValidator('any_password', 'password')
     ])
-    expect(result).toEqual({
-      statusCode: 400,
-      data: error
-    })
   })
 
   it('should call LoginAuthentication with correct params', async () => {
@@ -71,17 +58,6 @@ describe('LoginController', () => {
       data: {
         accessToken: 'any_value'
       }
-    })
-  })
-
-  it('should return 500 if authentication throws', async () => {
-    const error = new Error('infra_error')
-    loginAuth.auth.mockRejectedValueOnce(error)
-    const httpResponse = await sut.handle({ user, password })
-
-    expect(httpResponse).toEqual({
-      statusCode: 500,
-      data: new ServerError(error)
     })
   })
 })
