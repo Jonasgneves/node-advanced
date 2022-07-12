@@ -1,8 +1,7 @@
 import { LoginAuthentication } from '@/domain/features'
 import { badRequest, HttpResponse, serverError, unauthorized, ok } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
-import { RequiredFieldError } from '@/application/errors'
-import { RequiredStringValidator, ValidationComposite } from '../validation'
+import { RequiredStringValidator, ValidationComposite } from '@/application/validation'
 
 type HttpRequest = {
   user: string
@@ -19,9 +18,6 @@ export class LoginController {
       const error = this.validate(httpRequest)
       if (error !== undefined) {
         return badRequest(error)
-      }
-      if (httpRequest.password === undefined || httpRequest.password === '' || httpRequest.password === null) {
-        return badRequest(new RequiredFieldError('Password'))
       }
       const accessToken = await this.loginAuth.auth({ user: httpRequest.user, password: httpRequest.password })
       if (accessToken instanceof AccessToken) {

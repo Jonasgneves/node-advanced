@@ -1,4 +1,3 @@
-// import { AuthenticationError } from '@/domain/errors'
 import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
@@ -7,7 +6,7 @@ import { ServerError, UnauthorizedError } from '@/application/errors'
 import { RequiredStringValidator, ValidationComposite } from '@/application/validation'
 
 import { mock, MockProxy } from 'jest-mock-extended'
-import { mocked } from 'ts-jest/utils'
+import { mocked } from 'jest-mock'
 
 jest.mock('@/application/validation/composite')
 
