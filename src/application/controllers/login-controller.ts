@@ -1,7 +1,7 @@
 import { LoginAuthentication } from '@/domain/features'
 import { badRequest, HttpResponse, serverError, unauthorized, ok } from '@/application/helpers'
 import { AccessToken } from '@/domain/models'
-import { RequiredStringValidator, ValidationComposite } from '@/application/validation'
+import { ValidationBuilder, ValidationComposite } from '@/application/validation'
 
 type HttpRequest = {
   user: string
@@ -32,8 +32,8 @@ export class LoginController {
 
   private validate (httpRequest: HttpRequest): Error | undefined {
     return new ValidationComposite([
-      new RequiredStringValidator(httpRequest.user, 'user'),
-      new RequiredStringValidator(httpRequest.password, 'password')
+      ...ValidationBuilder.of({ value: httpRequest.user, fieldName: 'user' }).required().build(),
+      ...ValidationBuilder.of({ value: httpRequest.password, fieldName: 'password' }).required().build()
     ]).validate()
   }
 }
