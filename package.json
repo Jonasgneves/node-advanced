@@ -12,6 +12,7 @@
     "test:watch": "npm test -- --watch",
     "test:staged": "npm test -- --findRelatedTests",
     "test:coverage": "npm test -- --coverage",
+    "test:api": "npm test -- -c ./jest.integration.config.js ./tests/external/login.test.ts",
     "prepare": "husky install"
   },
   "keywords": [],
