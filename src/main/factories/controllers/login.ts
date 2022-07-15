@@ -1,6 +1,6 @@
 import { LoginController } from '@/application/controllers'
-import { makeLoginAuthenticationService } from '@/main/factories/services'
+import { makeLoginAuthentication } from '@/main/factories/use-cases'
 
 export const makeLoginController = (): LoginController => {
-  return new LoginController(makeLoginAuthenticationService())
+  return new LoginController(makeLoginAuthentication())
 }

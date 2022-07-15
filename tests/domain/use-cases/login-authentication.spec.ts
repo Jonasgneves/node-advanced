@@ -1,15 +1,15 @@
-import { LoginAuthenticationService } from '@/domain/services'
+import { LoginAuthenticationUseCase } from '@/domain/use-cases'
 import { UserRepository } from '@/domain/contracts/repos'
 import { TokenGenerator } from '@/domain/contracts/crypto'
 import { AuthenticationError } from '@/domain/errors'
-import { AccessToken } from '@/domain/models'
+import { AccessToken } from '@/domain/entities'
 
 import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('LoginAuthenticationService', () => {
   let loadUserRepo: MockProxy<UserRepository>
   let crypto: MockProxy<TokenGenerator>
-  let sut: LoginAuthenticationService
+  let sut: LoginAuthenticationUseCase
   let user: string
   let password: string
 
@@ -23,7 +23,7 @@ describe('LoginAuthenticationService', () => {
   })
 
   beforeEach(() => {
-    sut = new LoginAuthenticationService(
+    sut = new LoginAuthenticationUseCase(
       loadUserRepo,
       crypto
     )

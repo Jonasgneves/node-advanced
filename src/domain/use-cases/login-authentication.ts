@@ -2,9 +2,9 @@ import { AuthenticationError } from '@/domain/errors'
 import { LoginAuthentication } from '@/domain/features'
 import { UserRepository } from '@/domain/contracts/repos'
 import { TokenGenerator } from '@/domain/contracts/crypto'
-import { AccessToken } from '@/domain/models'
+import { AccessToken } from '@/domain/entities'
 
-export class LoginAuthenticationService implements LoginAuthentication {
+export class LoginAuthenticationUseCase implements LoginAuthentication {
   constructor (
     private readonly userRepository: UserRepository,
     private readonly crypto: TokenGenerator

@@ -1,7 +1,7 @@
 import { LoginAuthentication } from '@/domain/features'
 import { HttpResponse, unauthorized, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
-import { AccessToken } from '@/domain/models'
+import { AccessToken } from '@/domain/entities'
 import { ValidationBuilder as Builder, Validator } from '@/application/validation'
 
 type HttpRequest = {
