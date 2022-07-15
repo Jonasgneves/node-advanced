@@ -1,4 +1,4 @@
-import { UserRepository } from '@/data/contracts/repos'
+import { UserRepository } from '@/domain/contracts/repos'
 import { getRepository } from 'typeorm'
 import { User } from '@/infra/postgres/entities'
 

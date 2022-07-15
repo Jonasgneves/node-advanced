@@ -1,6 +1,6 @@
-import { LoginAuthenticationService } from '@/data/services'
-import { UserRepository } from '@/data/contracts/repos'
-import { TokenGenerator } from '@/data/contracts/crypto'
+import { LoginAuthenticationService } from '@/domain/services'
+import { UserRepository } from '@/domain/contracts/repos'
+import { TokenGenerator } from '@/domain/contracts/crypto'
 import { AuthenticationError } from '@/domain/errors'
 import { AccessToken } from '@/domain/models'
 
