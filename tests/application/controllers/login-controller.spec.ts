@@ -1,5 +1,4 @@
 import { AuthenticationError } from '@/domain/errors'
-import { AccessToken } from '@/domain/entities'
 import { LoginController } from '@/application/controllers'
 import { UnauthorizedError } from '@/application/errors'
 import { RequiredStringValidator } from '@/application/validation'
@@ -14,7 +13,7 @@ describe('LoginController', () => {
     user = 'any_user'
     password = 'any_password'
     loginAuth = jest.fn()
-    loginAuth.mockResolvedValue(new AccessToken('any_value'))
+    loginAuth.mockResolvedValue({ accessToken: 'any_value' })
   })
 
   beforeEach(() => {
@@ -38,7 +37,8 @@ describe('LoginController', () => {
   })
 
   it('should return 401 if authentication fails', async () => {
-    loginAuth.mockResolvedValueOnce(new AuthenticationError())
+    loginAuth.mockRejectedValueOnce(new AuthenticationError())
+
     const httpResponse = await sut.handle({ user, password })
 
     expect(httpResponse).toEqual({

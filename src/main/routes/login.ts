@@ -1,4 +1,4 @@
-import { adaptExpressRoute } from '@/infra/http'
+import { adaptExpressRoute } from '@/main/adapters'
 import { makeLoginController as adapt } from '@/main/factories/controllers'
 
 import { Router } from 'express'

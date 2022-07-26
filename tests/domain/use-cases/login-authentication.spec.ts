@@ -39,9 +39,9 @@ describe('LoginAuthenticationService', () => {
   it('Should throw a AuthenticationError when UserRepository return undefined', async () => {
     loadUserRepo.loadUser.mockResolvedValueOnce(undefined)
 
-    const authResult = await sut({ user, password })
+    const promise = sut({ user, password })
 
-    expect(authResult).toEqual(new AuthenticationError())
+    await expect(promise).rejects.toThrow(new AuthenticationError())
   })
 
   it('Should call TokenGenerator whith correct params', async () => {
@@ -57,7 +57,7 @@ describe('LoginAuthenticationService', () => {
   it('Should return an accessToken success', async () => {
     const authResult = await sut({ user, password })
 
-    expect(authResult).toEqual(new AccessToken('any_generated_token'))
+    expect(authResult).toEqual({ accessToken: 'any_generated_token' })
   })
 
   it('Should rethrow if UserRepository throws', async () => {

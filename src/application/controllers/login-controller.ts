@@ -1,6 +1,5 @@
 import { HttpResponse, unauthorized, ok } from '@/application/helpers'
 import { Controller } from '@/application/controllers'
-import { AccessToken } from '@/domain/entities'
 import { ValidationBuilder as Builder, Validator } from '@/application/validation'
 import { LoginAuthentication } from '@/domain/use-cases'
 
@@ -14,10 +13,12 @@ export class LoginController extends Controller {
   }
 
   async perform (httpRequest: HttpRequest): Promise<HttpResponse<Model>> {
-    const accessToken = await this.loginAuth({ user: httpRequest.user, password: httpRequest.password })
-    return accessToken instanceof AccessToken
-      ? ok({ accessToken: accessToken.value })
-      : unauthorized()
+    try {
+      const accessToken = await this.loginAuth({ user: httpRequest.user, password: httpRequest.password })
+      return ok(accessToken)
+    } catch {
+      return unauthorized()
+    }
   }
 
   override buildValidators (httpRequest: HttpRequest): Validator[] {

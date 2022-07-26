@@ -5,16 +5,16 @@ import { AccessToken } from '@/domain/entities'
 
 type Setup = (userRepository: UserRepository, crypto: TokenGenerator) => LoginAuthentication
 
-export type LoginAuthentication = (params: { user: string, password: string }) => Promise<AccessToken | AuthenticationError>
+export type LoginAuthentication = (params: { user: string, password: string }) => Promise<{ accessToken: string }>
 
 export const setupLoginAuthentication: Setup = (userRepository, crypto) => async params => {
   const accountUserId = await userRepository.loadUser(params)
   if (accountUserId !== undefined) {
-    const token = await crypto.generateToken({
+    const accessToken = await crypto.generateToken({
       key: accountUserId.userId,
       expirationInMs: AccessToken.expirationInMs
     })
-    return new AccessToken(token)
+    return { accessToken }
   }
-  return new AuthenticationError()
+  throw new AuthenticationError()
 }
