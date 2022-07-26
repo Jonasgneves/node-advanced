@@ -1,23 +1,20 @@
 import { AuthenticationError } from '@/domain/errors'
-import { LoginAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/entities'
 import { LoginController } from '@/application/controllers'
 import { UnauthorizedError } from '@/application/errors'
 import { RequiredStringValidator } from '@/application/validation'
 
-import { mock, MockProxy } from 'jest-mock-extended'
-
 describe('LoginController', () => {
   let sut: LoginController
-  let loginAuth: MockProxy<LoginAuthentication>
+  let loginAuth: jest.Mock
   let user: string
   let password: string
 
   beforeAll(() => {
     user = 'any_user'
     password = 'any_password'
-    loginAuth = mock()
-    loginAuth.auth.mockResolvedValue(new AccessToken('any_value'))
+    loginAuth = jest.fn()
+    loginAuth.mockResolvedValue(new AccessToken('any_value'))
   })
 
   beforeEach(() => {
@@ -36,12 +33,12 @@ describe('LoginController', () => {
   it('should call LoginAuthentication with correct params', async () => {
     await sut.handle({ user, password })
 
-    expect(loginAuth.auth).toHaveBeenCalledWith({ user, password })
-    expect(loginAuth.auth).toHaveBeenCalledTimes(1)
+    expect(loginAuth).toHaveBeenCalledWith({ user, password })
+    expect(loginAuth).toHaveBeenCalledTimes(1)
   })
 
   it('should return 401 if authentication fails', async () => {
-    loginAuth.auth.mockResolvedValueOnce(new AuthenticationError())
+    loginAuth.mockResolvedValueOnce(new AuthenticationError())
     const httpResponse = await sut.handle({ user, password })
 
     expect(httpResponse).toEqual({

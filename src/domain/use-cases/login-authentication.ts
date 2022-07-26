@@ -1,25 +1,20 @@
 import { AuthenticationError } from '@/domain/errors'
-import { LoginAuthentication } from '@/domain/features'
 import { UserRepository } from '@/domain/contracts/repos'
 import { TokenGenerator } from '@/domain/contracts/crypto'
 import { AccessToken } from '@/domain/entities'
 
-export class LoginAuthenticationUseCase implements LoginAuthentication {
-  constructor (
-    private readonly userRepository: UserRepository,
-    private readonly crypto: TokenGenerator
-  ) {
-  }
+type Setup = (userRepository: UserRepository, crypto: TokenGenerator) => LoginAuthentication
 
-  async auth (params: LoginAuthentication.Params): Promise<LoginAuthentication.Result> {
-    const accountUserId = await this.userRepository.loadUser(params)
-    if (accountUserId !== undefined) {
-      const token = await this.crypto.generateToken({
-        key: accountUserId.userId,
-        expirationInMs: AccessToken.expirationInMs
-      })
-      return new AccessToken(token)
-    }
-    return new AuthenticationError()
+export type LoginAuthentication = (params: { user: string, password: string }) => Promise<AccessToken | AuthenticationError>
+
+export const setupLoginAuthentication: Setup = (userRepository, crypto) => async params => {
+  const accountUserId = await userRepository.loadUser(params)
+  if (accountUserId !== undefined) {
+    const token = await crypto.generateToken({
+      key: accountUserId.userId,
+      expirationInMs: AccessToken.expirationInMs
+    })
+    return new AccessToken(token)
   }
+  return new AuthenticationError()
 }
