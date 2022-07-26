@@ -4,8 +4,9 @@ import { TokenGenerator } from '@/domain/contracts/crypto'
 import { AccessToken } from '@/domain/entities'
 
 type Setup = (userRepository: UserRepository, crypto: TokenGenerator) => LoginAuthentication
-
-export type LoginAuthentication = (params: { user: string, password: string }) => Promise<{ accessToken: string }>
+type Input = { user: string, password: string }
+type Output = { accessToken: string }
+export type LoginAuthentication = (params: Input) => Promise<Output>
 
 export const setupLoginAuthentication: Setup = (userRepository, crypto) => async params => {
   const accountUserId = await userRepository.loadUser(params)
