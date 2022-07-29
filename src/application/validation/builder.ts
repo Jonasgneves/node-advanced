@@ -5,7 +5,6 @@ export class ValidationBuilder {
     private readonly value: string,
     private readonly fieldName: string,
     private readonly validators: Validator[] = []
-
   ) {}
 
   static of (params: { value: string, fieldName: string }): ValidationBuilder {

@@ -1,4 +1,4 @@
 export const env = {
-  port: process.env.PORT ?? 8080,
-  jwtSecret: process.env.JWT_SECRET ?? 'Manga_do_cemiterio'
+  port: process.env.PORT ?? '',
+  jwtSecret: process.env.JWT_SECRET ?? ''
 }
