@@ -1,6 +1,6 @@
 import { setupLoginAuthentication, LoginAuthentication } from '@/domain/use-cases'
 import { UserRepository } from '@/domain/contracts/repos'
-import { TokenGenerator } from '@/domain/contracts/crypto'
+import { TokenGenerator } from '@/domain/contracts/gateways'
 import { AuthenticationError } from '@/domain/errors'
 import { AccessToken } from '@/domain/entities'
 
@@ -18,7 +18,7 @@ describe('LoginAuthenticationService', () => {
     password = 'any_password'
     loadUserRepo = mock()
     crypto = mock()
-    crypto.generateToken.mockResolvedValue('any_generated_token')
+    crypto.generate.mockResolvedValue('any_generated_token')
     loadUserRepo.loadUser.mockResolvedValue({ userId: 'any_user_id' })
   })
 
@@ -47,11 +47,11 @@ describe('LoginAuthenticationService', () => {
   it('Should call TokenGenerator whith correct params', async () => {
     await sut({ user, password })
 
-    expect(crypto.generateToken).toHaveBeenCalledWith({
+    expect(crypto.generate).toHaveBeenCalledWith({
       key: 'any_user_id',
       expirationInMs: AccessToken.expirationInMs
     })
-    expect(crypto.generateToken).toHaveBeenCalledTimes(1)
+    expect(crypto.generate).toHaveBeenCalledTimes(1)
   })
 
   it('Should return an accessToken success', async () => {
@@ -69,7 +69,7 @@ describe('LoginAuthenticationService', () => {
   })
 
   it('Should rethrow if TokenGenerator throws', async () => {
-    crypto.generateToken.mockRejectedValueOnce(new Error('token_error'))
+    crypto.generate.mockRejectedValueOnce(new Error('token_error'))
 
     const promise = sut({ user, password })
 
