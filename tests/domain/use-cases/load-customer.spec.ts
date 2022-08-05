@@ -1,20 +1,7 @@
+import { SearchCustomer } from '@/domain/contracts/repos'
+import { LoadCustomer, setupLoadCustomer } from '@/domain/use-cases'
+
 import { mock, MockProxy } from 'jest-mock-extended'
-
-type Setup = (loadCustomer: SearchCustomer) => LoadCustomer
-type Input = { cpf: string }
-type LoadCustomer = (input: Input) => Promise<void>
-
-const setupLoadCustomer: Setup = loadCustomer => async ({ cpf }) => {
-  await loadCustomer.load({ cpf })
-}
-
-interface SearchCustomer {
-  load: (input: SearchCustomer.Input) => Promise<void>
-}
-
-namespace SearchCustomer {
-  export type Input = { cpf: string }
-}
 
 describe('setupLoadCustomer', () => {
   let cpf: string
