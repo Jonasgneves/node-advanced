@@ -1,4 +1,4 @@
-import { mock } from 'jest-mock-extended'
+import { mock, MockProxy } from 'jest-mock-extended'
 
 type Setup = (loadCustomer: SearchCustomer) => LoadCustomer
 type Input = { cpf: string }
@@ -17,12 +17,21 @@ namespace SearchCustomer {
 }
 
 describe('setupLoadCustomer', () => {
-  it('should call customerRepo with correct params', async () => {
-    const cpf = 'any_cpf'
-    const loadCustomer = mock<SearchCustomer>()
-    const sut = setupLoadCustomer(loadCustomer)
+  let cpf: string
+  let loadCustomer: MockProxy<SearchCustomer>
+  let sut: LoadCustomer
 
-    await sut({ cpf: 'any_cpf' })
+  beforeAll(() => {
+    cpf = 'valid_cpf'
+    loadCustomer = mock()
+  })
+
+  beforeEach(() => {
+    sut = setupLoadCustomer(loadCustomer)
+  })
+
+  it('should call customerRepo with correct params', async () => {
+    await sut({ cpf: 'valid_cpf' })
 
     expect(loadCustomer.load).toHaveBeenCalledWith({ cpf })
     expect(loadCustomer.load).toHaveBeenCalledTimes(1)
