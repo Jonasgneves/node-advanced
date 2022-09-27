@@ -1,10 +1,10 @@
 import './config/module-alias'
-import { app } from '@/main/config/app'
-import { env } from '@/main/config/env'
-
 import 'reflect-metadata'
-import { createConnection } from 'typeorm'
+import { MysqlConnection } from '@/infra/repos/mysql/helpers'
 
-createConnection()
-  .then(() => app.listen(env.port, () => console.log(`Server running at http://localhost:${env.port}`)))
+MysqlConnection.getInstance().connect()
+  .then(async () => {
+    const { app } = await import('@/main/config/app')
+    app.listen(process.env.PORT, () => console.log(`Server running at http://localhost:${process.env.PORT}`))
+  })
   .catch(console.error)

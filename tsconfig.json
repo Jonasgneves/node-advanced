@@ -14,7 +14,8 @@
       "@/*": ["*"],
       "@/tests/*": ["../tests/*"]
     },
-    "strict": true,
+    "strict": false,
+    "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
   },

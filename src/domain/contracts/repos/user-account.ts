@@ -4,8 +4,8 @@ export interface UserRepository {
 
 export namespace UserRepository {
   export type Params = {
-    user: string | undefined
-    password: string | undefined
+    user: string
+    password: string
   }
 
   export type Result = undefined | {

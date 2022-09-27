@@ -16,7 +16,8 @@ export class LoginController extends Controller {
     try {
       const accessToken = await this.loginAuth({ user: httpRequest.user, password: httpRequest.password })
       return ok(accessToken)
-    } catch {
+    } catch (err) {
+      console.log(err)
       return unauthorized()
     }
   }

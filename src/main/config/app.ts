@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { setupMiddlewares } from '@/main/config/middlewares'
 import { setupRoutes } from '@/main/config/routes'
 
