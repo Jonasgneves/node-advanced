@@ -1,5 +1,5 @@
-import { PgUserAccountRepository } from '@/infra/repos'
+import { MysqlUserAccountRepository } from '@/infra/repos'
 
-export const makeUserAccountRepository = (): PgUserAccountRepository => {
-  return new PgUserAccountRepository()
+export const makeUserAccountRepository = (): MysqlUserAccountRepository => {
+  return new MysqlUserAccountRepository()
 }

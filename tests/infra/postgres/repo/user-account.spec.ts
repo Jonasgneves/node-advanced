@@ -1,19 +1,19 @@
-import { PgUserAccountRepository } from '@/infra/postgres/repos'
+import { MysqlUserAccountRepository } from '@/infra/postgres/repos'
 import { User } from '@/infra/repos/mysql/entities'
 import { makeFakeDb } from '@/tests/infra/postgres/mocks'
 
 import { getRepository, Repository, getConnection } from 'typeorm'
 import { IBackup } from 'pg-mem'
 
-describe('PgUserAccountRepository', () => {
-  let sut: PgUserAccountRepository
-  let pgUserRepo: Repository<User>
+describe('MysqlUserAccountRepository', () => {
+  let sut: MysqlUserAccountRepository
+  let MysqlUserRepo: Repository<User>
   let backup: IBackup
 
   beforeAll(async () => {
     const db = await makeFakeDb([User])
     backup = db.backup()
-    pgUserRepo = getRepository(User)
+    MysqlUserRepo = getRepository(User)
   })
 
   afterAll(async () => {
@@ -22,11 +22,11 @@ describe('PgUserAccountRepository', () => {
 
   beforeEach(() => {
     backup.restore()
-    sut = new PgUserAccountRepository()
+    sut = new MysqlUserAccountRepository()
   })
   describe('loadUser', () => {
     it('should return an account if user exists', async () => {
-      await pgUserRepo.save({ name: 'any_user', email: 'jonas@mail.com', password: 'any_password' })
+      await MysqlUserRepo.save({ name: 'any_user', email: 'jonas@mail.com', password: 'any_password' })
 
       const account = await sut.loadUser({ user: 'any_user', password: 'any_password' })
 

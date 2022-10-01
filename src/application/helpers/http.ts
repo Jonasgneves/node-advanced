@@ -10,19 +10,38 @@ export const ok = <T = any> (data: T): HttpResponse<T> => ({
   data
 })
 
-export const badRequest = (error: Error): HttpResponse<Error> => ({
+export const created = <T = any> (data: T): HttpResponse<T> => ({
+  statusCode: 201,
+  data
+})
+
+export const noContent = (data?: any): HttpResponse<void> => ({
+  statusCode: 204,
+  data
+})
+
+export const badRequest = (error: Error): HttpResponse<{ detail: string, user_message?: string}> => ({
   statusCode: 400,
-  data: error
+  data: {
+    detail: error.message,
+    user_message: 'A requiseção não pode ser completada devido à sintaxe inválida'
+  }
 })
 
-export const unauthorized = (): HttpResponse<Error> => ({
+export const unauthorized = (error?: Error): HttpResponse<{ detail: string, user_message?: string }> => ({
   statusCode: 401,
-  data: new UnauthorizedError()
+  data: {
+    detail: error?.message ?? new UnauthorizedError().message,
+    user_message: new UnauthorizedError().message
+  }
 })
 
-export const notFound = (): HttpResponse<Error> => ({
+export const notFound = (error?: Error): HttpResponse<{ detail: string, user_message?: string}> => ({
   statusCode: 404,
-  data: new NotFoundError()
+  data: {
+    detail: error?.message ?? new NotFoundError().message,
+    user_message: new NotFoundError().message
+  }
 })
 
 export const forbbiden = (): HttpResponse<Error> => ({
@@ -30,7 +49,10 @@ export const forbbiden = (): HttpResponse<Error> => ({
   data: new ForbiddenError()
 })
 
-export const serverError = (error: Error): HttpResponse<Error> => ({
+export const serverError = (error: Error): HttpResponse<{ detail: string, user_message?: string}> => ({
   statusCode: 500,
-  data: new ServerError(error)
+  data: {
+    detail: error.message,
+    user_message: new ServerError().message
+  }
 })
