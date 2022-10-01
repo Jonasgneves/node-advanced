@@ -2,12 +2,12 @@ import { RequiredStringValidator, Validator } from '@/application/validation'
 
 export class ValidationBuilder {
   private constructor (
-    private readonly value: string,
+    private readonly value: any,
     private readonly fieldName: string,
     private readonly validators: Validator[] = []
   ) {}
 
-  static of (params: { value: string, fieldName: string }): ValidationBuilder {
+  static of (params: { value: any, fieldName: string }): ValidationBuilder {
     return new ValidationBuilder(params.value, params.fieldName)
   }
 
