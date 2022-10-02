@@ -87,4 +87,28 @@ export class MysqlCitizenRepository extends MysqlRepository implements CitizenRe
     }
     throw new NotFoundError()
   }
+
+  async loadCitizens (pagination: number, quantity: number): Promise<CitizenRepository.Output> {
+    const citizenRepo = this.getRepository(Cidadao)
+    const addressRepo = this.getRepository(Endereco)
+    const contacRepo = this.getRepository(Contato)
+    const citizenArr: CitizenRepository.Model[] = []
+    const citizens = await citizenRepo.query(`
+      select * from CIDADAO order by NOME asc limit ${quantity} offset ${pagination}
+    `)
+    const countCitizens = await citizenRepo.count()
+    for (const citizen of citizens) {
+      const address = await addressRepo.findOneByOrFail({ idEndereco: citizen.idEndereco })
+      const contact = await contacRepo.findOneByOrFail({ idContato: citizen.idContato })
+      citizenArr.push({
+        CIDADAO: citizen,
+        ENDERECO: address,
+        CONTATO: contact
+      })
+    }
+    return {
+      QUANTIDADE: countCitizens,
+      CIDADAOS: citizenArr
+    }
+  }
 }

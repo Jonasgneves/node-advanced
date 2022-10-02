@@ -1,27 +1,8 @@
 import { Controller } from '@/application/controllers'
 import { badRequest, HttpResponse, notFound, ok, serverError } from '@/application/helpers'
-// import { ValidationBuilder as Builder, Validator } from '@/application/validation'
 import { SelectCitizen } from '@/domain/use-cases'
 import { Cidadao, Contato, Endereco } from '@/infra/repos/mysql/entities'
-import { NotFoundError } from '../errors'
-
-// export type EnderecoCidadao = {
-//   ID_ENDERECO: string
-//   LOGRADOURO: string
-//   NUMERO: string
-//   COMPLEMENTO: string
-//   CEP: string
-//   BAIRRO: string
-//   CIDADE: string
-//   UF: string
-// }
-
-// export type ContatoCidadao = {
-//   ID_CONTATO: string
-//   TELEFONE: string
-//   CELULAR: string
-//   EMAIL: string
-// }
+import { NotFoundError } from '@/application/errors'
 
 type Input = {
   nome?: string
@@ -54,13 +35,4 @@ export class SelectCitizenController extends Controller {
       return serverError(error)
     }
   }
-
-  // override buildValidators (httpRequest: Input): Validator[] {
-  //   return [
-  // ...Builder.of({ value: httpRequest?.nome, fieldName: 'nome' }).required().build(),
-  // ...Builder.of({ value: httpRequest?.cpf, fieldName: 'cpf' }).required().build(),
-  // ...Builder.of({ value: httpRequest?.rg, fieldName: 'rg' }).required().build()
-
-  //   ]
-  // }
 }
