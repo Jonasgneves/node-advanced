@@ -13,6 +13,13 @@ export class RequiredFieldError extends Error {
   }
 }
 
+export class RequiredObjectFieldError extends Error {
+  constructor (fieldName: string) {
+    super(`Parâmetro invalido ${fieldName} precisa ser um objeto`)
+    this.name = 'RequiredObjectFieldError'
+  }
+}
+
 export class UnauthorizedError extends Error {
   constructor () {
     super('Unauthorized')

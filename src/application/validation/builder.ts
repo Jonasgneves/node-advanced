@@ -1,4 +1,9 @@
-import { RequiredStringValidator, Validator } from '@/application/validation'
+import {
+  RequiredStringValidator,
+  Validator,
+  RequiredEnderecoValidator,
+  RequiredContatoValidator
+} from '@/application/validation'
 
 export class ValidationBuilder {
   private constructor (
@@ -13,6 +18,16 @@ export class ValidationBuilder {
 
   required (): ValidationBuilder {
     this.validators.push(new RequiredStringValidator(this.value, this.fieldName))
+    return this
+  }
+
+  enderecoRequired (): ValidationBuilder {
+    this.validators.push(new RequiredEnderecoValidator(this.value, this.fieldName))
+    return this
+  }
+
+  contatoRequired (): ValidationBuilder {
+    this.validators.push(new RequiredContatoValidator(this.value, this.fieldName))
     return this
   }
 

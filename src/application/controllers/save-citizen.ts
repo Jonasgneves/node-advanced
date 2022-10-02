@@ -46,8 +46,8 @@ export class SaveCitizenController extends Controller {
 
   async perform (httpRequest: Input): Promise<HttpResponse<Output>> {
     try {
-      const savedUser = await this.saveCitizen(httpRequest)
-      return created(savedUser)
+      const savedCitizen = await this.saveCitizen(httpRequest)
+      return created(savedCitizen)
     } catch (error) {
       console.log(error)
       return serverError(error)
@@ -60,8 +60,8 @@ export class SaveCitizenController extends Controller {
       ...Builder.of({ value: httpRequest.CPF, fieldName: 'CPF' }).required().build(),
       ...Builder.of({ value: httpRequest.ID_CIDADAO, fieldName: 'ID_CIDADAO' }).required().build(),
       ...Builder.of({ value: httpRequest.RG, fieldName: 'RG' }).required().build(),
-      ...Builder.of({ value: httpRequest.ENDERECO, fieldName: 'ENDERECO' }).required().build(),
-      ...Builder.of({ value: httpRequest.CONTATO, fieldName: 'CONTATO' }).required().build()
+      ...Builder.of({ value: httpRequest.ENDERECO, fieldName: 'ENDERECO' }).enderecoRequired().build(),
+      ...Builder.of({ value: httpRequest.CONTATO, fieldName: 'CONTATO' }).contatoRequired().build()
 
     ]
   }
